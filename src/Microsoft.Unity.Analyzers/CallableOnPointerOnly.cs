@@ -47,12 +47,16 @@ public class CallableOnPointerOnlyAnalyzer : DiagnosticAnalyzer
 			return;
 		}
 
-		if (invocationExpr.Expression is MemberAccessExpressionSyntax memberAccessExpr)
+		var containingType = methodSymbol.ContainingType;
+		var currentSymbol = context.ContainingSymbol?.ContainingType;
+		if (SymbolEqualityComparer.Default.Equals(containingType, currentSymbol))
 		{
-			if (memberAccessExpr.OperatorToken.IsKind(SyntaxKind.MinusGreaterThanToken))
-			{
-				return;
-			}
+			return;
+		}
+
+		if (invocationExpr.Expression is MemberAccessExpressionSyntax memberAccessExpr && memberAccessExpr.OperatorToken.IsKind(SyntaxKind.MinusGreaterThanToken))
+		{
+			return;
 		}
 
 		// Report diagnostic
